@@ -1,12 +1,101 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
+// =====================
+// Generator
+// =====================
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
+// =====================
+// Datasource
+// =====================
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
+}
+
+// =====================
+// Enums
+// =====================
+enum Role {
+  USER
+  ADMIN
+}
+
+// =====================
+// User
+// =====================
+model User {
+  id        Int         @id @default(autoincrement())
+  email     String      @unique
+  password  String
+  name      String?
+  role      Role        @default(USER)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  images    UserImage[]
+  favorites Favorite[]
+}
+
+// =====================
+// UserImage
+// =====================
+model UserImage {
+  id        Int      @id @default(autoincrement())
+  url       String
+  userId    Int
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// =====================
+// Category
+// =====================
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  products  Product[]
+}
+
+// =====================
+// Product
+// =====================
+model Product {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  price       Float
+  stock       Int       @default(0)
+  imageUrl    String?
+  categoryId  Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  category    Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  favorites   Favorite[]
+
+  @@index([categoryId])
+}
+
+// =====================
+// Favorite
+// =====================
+model Favorite {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  productId Int
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([userId])
+  @@index([productId])
 }

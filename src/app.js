@@ -17,3 +17,12 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
 });
+// src/app.js (موقتاً اضافه کن)
+const prisma = require('./config/prisma');
+
+async function testConnection() {
+  const userCount = await prisma.user.count();
+  console.log(`✅ Database connected. Users: ${userCount}`);
+}
+
+testConnection().catch(console.error);
