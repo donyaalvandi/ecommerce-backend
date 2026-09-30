@@ -8,7 +8,7 @@ async function main() {
   console.log('🌱 Seeding database...');
 
   // =====================
-  // ساخت Admin User
+  // Admin User
   // =====================
   const adminPassword = await bcrypt.hash('admin123', 10);
 
@@ -22,10 +22,10 @@ async function main() {
       role: 'ADMIN',
     },
   });
-  console.log('✅ Admin user created:', admin.email);
+  console.log('✅ Admin user:', admin.email);
 
   // =====================
-  // ساخت Normal User
+  // Normal User
   // =====================
   const userPassword = await bcrypt.hash('user123', 10);
 
@@ -39,10 +39,10 @@ async function main() {
       role: 'USER',
     },
   });
-  console.log('✅ Normal user created:', user.email);
+  console.log('✅ Normal user:', user.email);
 
   // =====================
-  // ساخت Category ها
+  // Categories
   // =====================
   const electronics = await prisma.category.upsert({
     where: { name: 'Electronics' },
@@ -62,10 +62,10 @@ async function main() {
     create: { name: 'Books' },
   });
 
-  console.log('✅ Categories created:', electronics.name, clothing.name, books.name);
+  console.log('✅ Categories:', electronics.name, clothing.name, books.name);
 
   // =====================
-  // ساخت Product ها
+  // Products
   // =====================
   const product1 = await prisma.product.create({
     data: {
@@ -87,8 +87,7 @@ async function main() {
     },
   });
 
-  console.log('✅ Products created:', product1.name, product2.name);
-
+  console.log('✅ Products:', product1.name, product2.name);
   console.log('🎉 Seeding completed!');
 }
 
@@ -99,4 +98,4 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect();
-  });dir prisma
+  });
