@@ -25,6 +25,7 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
 
+
 // Error Handling
 app.use(notFoundHandler);
 app.use(errorMiddleware);

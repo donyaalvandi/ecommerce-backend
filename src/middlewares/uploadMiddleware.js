@@ -5,7 +5,7 @@ const fs = require('fs');
 const ApiError = require('../utils/ApiError');
 
 // =====================
-// اطمینان از وجود پوشه‌ها
+// Helper: اطمینان از وجود پوشه
 // =====================
 const ensureDir = (dir) => {
   if (!fs.existsSync(dir)) {
@@ -23,7 +23,9 @@ const productStorage = multer.diskStorage({
     cb(null, dir);
   },
   filename: (req, file, cb) => {
-    const uniqueName = `product-${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(file.originalname)}`;
+    const uniqueName = `product-${Date.now()}-${Math.round(
+      Math.random() * 1e9
+    )}${path.extname(file.originalname).toLowerCase()}`;
     cb(null, uniqueName);
   },
 });
@@ -38,7 +40,9 @@ const userStorage = multer.diskStorage({
     cb(null, dir);
   },
   filename: (req, file, cb) => {
-    const uniqueName = `user-${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(file.originalname)}`;
+    const uniqueName = `user-${Date.now()}-${Math.round(
+      Math.random() * 1e9
+    )}${path.extname(file.originalname).toLowerCase()}`;
     cb(null, uniqueName);
   },
 });
@@ -47,18 +51,29 @@ const userStorage = multer.diskStorage({
 // Filter: فقط عکس
 // =====================
 const imageFilter = (req, file, cb) => {
-  const allowed = /jpeg|jpg|png|webp/;
-  const ext = allowed.test(path.extname(file.originalname).toLowerCase());
-  const mime = allowed.test(file.mimetype);
+  const allowedExt = /jpeg|jpg|png|webp/;
+  const allowedMime = /image\/(jpeg|jpg|png|webp)/;
 
-  if (ext && mime) {
+  const extName = allowedExt.test(
+    path.extname(file.originalname).toLowerCase()
+  );
+  const mimeType = allowedMime.test(file.mimetype);
+
+  if (extName && mimeType) {
     return cb(null, true);
   }
+
   cb(new ApiError(400, 'Only image files (jpg, jpeg, png, webp) are allowed'));
 };
 
+// =====================
+// محدودیت حجم (۲ مگابایت پیش‌فرض)
+// =====================
 const maxSize = parseInt(process.env.MAX_FILE_SIZE) || 2 * 1024 * 1024;
 
+// =====================
+// Multer instances
+// =====================
 const uploadProductImage = multer({
   storage: productStorage,
   fileFilter: imageFilter,
